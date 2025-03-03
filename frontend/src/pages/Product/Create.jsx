@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { Form, Container, Button, InputGroup } from 'react-bootstrap'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const Create = () => {
+    const nav = useNavigate();
     const [product, setProduct] = useState({
         name: "",
         description: "",
@@ -13,14 +15,15 @@ const Create = () => {
         date: new Date(),
         bestseller: false
     });
+
     const handleChange = (e) => {
         setProduct({ ...product, [e.target.name]: e.target.value })
     }
+
     const handleImages = (e) => {
-        console.log("Array with images: " + e.target.files)
         setProduct({ ...product, images: Array.from(e.target.files) })
-        console.log("added product to array")
     }
+    
     const handleCheckbox = (e) => {
         const { value, checked } = e.target;
     
@@ -35,8 +38,10 @@ const Create = () => {
             }
         });
     };
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log(product);
         const formData = new FormData();
 
         // Append each file separately
@@ -45,9 +50,9 @@ const Create = () => {
             product.images.forEach((image) => {
                 formData.append("images", image);
             });
-            console.log(formData.images)
+            console.log(formData.images);
         }else{
-            console.log(product.images)
+            console.log("Error "+product.images)
         }
 
         // Append only text fields dynamically
@@ -58,10 +63,11 @@ const Create = () => {
         });
 
         try {
-            const res = await axios.post("http://localhost:5000/addProduct", formData, {
+            const res = await axios.post("http://localhost:5000/createProduct", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
             console.log(res.data);
+            nav("/readProducts")
         } catch (err) {
             console.log("Data not added", err);
         }
@@ -72,9 +78,9 @@ const Create = () => {
                 Create Product
             </h1>
             <Form onSubmit={handleSubmit} encType='multipart/form-data'>
-                <Form.Group className="mb-3" controlId="title">
+                <Form.Group className="mb-3" controlId="name">
                     <Form.Label>Title</Form.Label>
-                    <Form.Control type="text" value={product.title} name='name' onChange={handleChange} />
+                    <Form.Control type="text" value={product.name} name='name' onChange={handleChange} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="description">
                     <Form.Label>Description</Form.Label>
@@ -101,7 +107,7 @@ const Create = () => {
                     <option value="summer">summer</option>
                 </Form.Select>
                 <Form.Label htmlFor="sizes">Sizes</Form.Label>
-                <InputGroup className="mb-3">
+                <InputGroup className="mb-3" id='sizes'>
                     <InputGroup.Checkbox
                         aria-label="small"
                         name="sizes"

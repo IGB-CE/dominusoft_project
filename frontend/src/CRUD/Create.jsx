@@ -56,7 +56,6 @@ const Create = () => {
                 <img
                     src={uploadedImage}
                     alt='Uploaded'
-                    rounded
                     className='img-fluid'
                 />
             ) : (
